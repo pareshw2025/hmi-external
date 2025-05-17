@@ -13,6 +13,7 @@ interface Expense {
   template: `
     <!--
       Features:
+      - Category dropdown with options: Fuel, Bills, Food, Education, EMI
       - Add, view, and delete expenses
       - Displays total expense amount
       - Inline form for quick entry
@@ -22,7 +23,10 @@ interface Expense {
       <h2>Expense Tracker</h2>
       <form (ngSubmit)="addExpense()" #expenseForm="ngForm" class="expense-form">
         <input type="date" [(ngModel)]="newExpense.date" name="date" required />
-        <input type="text" [(ngModel)]="newExpense.category" name="category" placeholder="Category" required maxlength="20"/>
+        <select [(ngModel)]="newExpense.category" name="category" required>
+          <option value="" disabled selected>Select Category</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
         <input type="text" [(ngModel)]="newExpense.description" name="description" placeholder="Description" maxlength="40"/>
         <input type="number" [(ngModel)]="newExpense.amount" name="amount" placeholder="Amount" required min="0.01" step="0.01"/>
         <button type="submit" [disabled]="!expenseForm.form.valid">Add</button>
@@ -60,7 +64,7 @@ interface Expense {
   styles: [`
     .expense-tracker { max-width: 500px; margin: 30px auto; font-family: Arial, sans-serif; }
     .expense-form { display: flex; gap: 6px; margin-bottom: 18px; }
-    .expense-form input { padding: 4px; width: 100px; }
+    .expense-form input, .expense-form select { padding: 4px; width: 100px; }
     .expense-form button { padding: 5px 10px; }
     .expenses-list table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
     th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
@@ -70,6 +74,7 @@ interface Expense {
   `]
 })
 export class PareshProjectComponent extends CommonExternalComponent {
+  categories: string[] = ['Fuel', 'Bills', 'Food', 'Education', 'EMI'];
   expenses: Expense[] = [];
   newExpense: Expense = {
     date: '',
@@ -81,7 +86,7 @@ export class PareshProjectComponent extends CommonExternalComponent {
   addExpense(): void {
     if (
       this.newExpense.date &&
-      this.newExpense.category.trim() &&
+      this.newExpense.category &&
       this.newExpense.amount > 0
     ) {
       this.expenses.push({ ...this.newExpense });
